@@ -13,6 +13,68 @@ class Nodo:
         # substitua a linha abaixo pelo seu codigo
         raise NotImplementedError
 
+# “2435_1687”
+# 2 4 3
+# 5 _ 1
+# 6 8 7
+
+# RESTRICOES
+# posicao = 0 -> esquerda e cima
+# posicao = 1 -> cima
+# posicao = 2 -> direita e cima
+# posicao = 3 -> esquerda
+# posicao = 5 -> direita
+# posicao = 6 -> esquerda e baixo
+# posicao = 7 -> baixo
+# posicao = 8 -> direita e baixo
+
+# Função auxiliar que faz uma troca entre dois elementos de uma string
+# Exemplo: troca("2435_168", 4, 0) -> "_4352168"      trocou o "_" com o "2"
+
+def troca(string, i, j):
+    lista_string = list(string)
+    lista_string[i], lista_string[j] = lista_string[j], lista_string[i]
+    return(''.join(lista_string))
+
+
+def direita(estado):
+    espaco = estado.find("_")
+    if espaco == 2 or espaco == 5 or espaco == 8:
+        return estado
+    else:
+        estado = troca(estado, espaco, espaco + 1)
+    
+    return estado
+
+
+def esquerda(estado):
+    espaco = estado.find("_")
+    if espaco == 0 or espaco == 3 or espaco == 6:
+        return estado
+    else:
+        estado = troca(estado, espaco, espaco - 1)
+    
+    return estado
+
+def acima(estado):
+    espaco = estado.find("_")
+    if espaco == 0 or espaco == 1 or espaco == 2:
+        return estado
+    else:
+        estado = troca(estado, espaco, espaco - 3)
+    
+    return estado
+
+def abaixo(estado):
+    espaco = estado.find("_")
+    if espaco == 6 or espaco == 7 or espaco == 8:
+        return estado
+    else:
+        estado = troca(estado, espaco, espaco + 3)
+    
+    return estado
+    
+
 
 def sucessor(estado):
     """
@@ -23,7 +85,36 @@ def sucessor(estado):
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    espaco = estado.find("_")
+
+    # _ esta na posicao central do puzzle, movimento em qualquer uma das quatro direções é permitido
+    if espaco == 4:
+        return [("esquerda", esquerda(estado)), ("direita", direita(estado)), ("acima", acima(estado)), ("abaixo", abaixo(estado))]
+  
+    elif espaco == 0:
+        return [("direita", direita(estado)), ("abaixo", abaixo(estado))]
+
+    elif espaco == 1:
+        return [("esquerda", esquerda(estado)), ("direita", direita(estado)),("abaixo", abaixo(estado))]
+
+    elif espaco == 2:
+        return [("esquerda", esquerda(estado)), ("abaixo", abaixo(estado))]
+
+    elif espaco == 3:
+        return [("direita", direita(estado)), ("acima", acima(estado)), ("abaixo", abaixo(estado))]
+
+    elif espaco == 5:
+        return [("esquerda", esquerda(estado)), ("acima", acima(estado)), ("abaixo", abaixo(estado))]
+
+    elif espaco == 6:
+        return [("direita", direita(estado)), ("acima", acima(estado))]
+
+    elif espaco == 7:
+        return [("esquerda", esquerda(estado)), ("direita", direita(estado)), ("acima", acima(estado))]
+
+    elif espaco == 8:
+        return [("esquerda", esquerda(estado)),("acima", acima(estado))]
+
 
 
 def expande(nodo):
