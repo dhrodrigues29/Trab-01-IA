@@ -10,8 +10,12 @@ class Nodo:
         :param acao:str, acao a partir do pai que leva a este nodo (None no caso do nó raiz)
         :param custo:int, custo do caminho da raiz até este nó
         """
-        # substitua a linha abaixo pelo seu codigo
-        raise NotImplementedError
+        # substituir a linha abaixo pelo seu codigo
+        self.estado: str = estado
+        self.pai: Nodo = pai
+        self.acao: str = acao
+        self.custo: int = custo
+        
 
 # “2435_1687”
 # 2 4 3
@@ -139,6 +143,19 @@ def bfs(estado):
     """
     # substituir a linha abaixo pelo seu codigo
     raise NotImplementedError
+    """
+    busca_grafo(s): 
+        X ← {}
+        F ← fila( {s} )
+        loop:
+            se F = ∅: FALHA
+            v ← F.desenfileira()
+            se v é o objetivo: retornar caminho s-v
+            se v ∉ X:
+                Insere v em X
+                Insere vizinhos de v em F
+    """
+    
 
 
 def dfs(estado):
