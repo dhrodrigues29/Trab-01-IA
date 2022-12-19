@@ -128,8 +128,30 @@ def expande(nodo):
     :param nodo: objeto da classe Nodo
     :return:
     """
-    # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+
+    # sucessores corresponde a uma lista de tuplas, cujas tuplas sao (acao, estado_atingido)
+    sucessores = sucessor(nodo.estado)
+
+    nodos_resultantes = []
+
+    # para cada tupla (acao, estado_atingido) na lista de sucessores...
+    for suc in sucessores:
+        #               estado   pai   acao    custo
+        novo_nodo = Nodo(suc[1], nodo, suc[0], nodo.custo + 1)
+        nodos_resultantes.append(novo_nodo)
+        del novo_nodo
+
+    return nodos_resultantes
+
+# Exemplo de output da função expande
+"""
+nodo1 = Nodo("1234_5678", None, None, 0)
+
+print(expande(nodo1)[0].estado + " " + expande(nodo1)[0].pai.estado + " " + expande(nodo1)[0].acao + " " + str(expande(nodo1)[0].custo))
+print(expande(nodo1)[1].estado + " " + expande(nodo1)[1].pai.estado + " " + expande(nodo1)[1].acao + " " + str(expande(nodo1)[1].custo))
+print(expande(nodo1)[2].estado + " " + expande(nodo1)[2].pai.estado + " " + expande(nodo1)[2].acao + " " + str(expande(nodo1)[2].custo))
+print(expande(nodo1)[3].estado + " " + expande(nodo1)[3].pai.estado + " " + expande(nodo1)[3].acao + " " + str(expande(nodo1)[3].custo))
+"""
 
 
 def bfs(estado):
