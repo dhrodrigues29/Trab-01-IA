@@ -1,3 +1,7 @@
+from collections import deque
+
+OBJETIVO = "12345678_"
+
 class Nodo:
     """
     Implemente a classe Nodo com os atributos descritos na funcao init
@@ -153,6 +157,26 @@ print(expande(nodo1)[2].estado + " " + expande(nodo1)[2].pai.estado + " " + expa
 print(expande(nodo1)[3].estado + " " + expande(nodo1)[3].pai.estado + " " + expande(nodo1)[3].acao + " " + str(expande(nodo1)[3].custo))
 """
 
+# funcao que retorna a lista de movimentos feitos do primeiro ate o nodo recebido
+def gera_lista_movimentos(nodo_final):
+
+    # inicia o nodo atual com o nodo recebido e a lista de acoes vazia
+    nodo_atual = nodo_final
+    lista_movimentos = []
+
+    # printa o custo do nodo final
+    print("custo do nodo final: ", nodo_final.custo)
+    
+    # enquanto o nodo atual tiver pai, adiciona sua acao a lista de movimentos 
+    # e atualiza o nodo atual para o nodo pai
+    while nodo_atual.pai != None:
+        lista_movimentos.append(nodo_atual.acao)
+        nodo_atual = nodo_atual.pai
+
+    # inverte e retorna a lista de movimentos preenchida do OBJETIVO ao estado inicial
+    lista_movimentos.reverse()
+    return lista_movimentos
+
 
 def bfs(estado):
     """
@@ -164,21 +188,39 @@ def bfs(estado):
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
-    """
-    busca_grafo(s): 
-        X ← {}
-        F ← fila( {s} )
-        loop:
-            se F = ∅: FALHA
-            v ← F.desenfileira()
-            se v é o objetivo: retornar caminho s-v
-            se v ∉ X:
-                Insere v em X
-                Insere vizinhos de v em F
-    """
-    
 
+    # inicia variavel de Nodo inicial com o estado recebido
+    estado_inicial = Nodo(estado, None, None, 0)
+
+    # inicia nodos_visitados como set(), que nao permite elementos repetidos i.e. set[1,1,2,3] = (1,2,3)
+    nodos_visitados = set()
+
+    # inicia nodos_fronteira como deque, que significa double-ended queue
+    # facilita pop e append e funciona com qualquer tipo
+    nodos_fronteira: deque = deque([estado_inicial])
+
+    # enquanto houver nodos, repete a busca
+    while len(nodos_fronteira) != 0:
+
+        # remove o nodo atual do deque, o primeiro da fila i.e. [1,2,3].popleft() = 1
+        nodo_atual = nodos_fronteira.popleft()  
+
+        # se o nodo for o OBJETIVO, retorna a lista de movimentos
+        if nodo_atual.estado == OBJETIVO:  
+            return gera_lista_movimentos(nodo_atual)
+
+        # checa se o estado atual ja estava na set de nodos visitados
+        if not nodo_atual.estado in nodos_visitados:
+
+            # adiciona o nodo aos nodos visitados
+            nodos_visitados.add(nodo_atual.estado)  
+
+            # insere no final da fila de nodos na fronteira o resultado do 
+            # expande para o nodo atual i.e. [1,2].extend([3]) = [1,2,3]
+            nodos_fronteira.extend(expande(nodo_atual))
+
+    # se o while da busca encerrar, nao existe sequencia de movimentos possivel
+    return None  
 
 def dfs(estado):
     """
@@ -190,7 +232,38 @@ def dfs(estado):
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    
+    # inicia variavel de Nodo inicial com o estado recebido
+    estado_inicial = Nodo(estado, None, None, 0)
+
+    # inicia nodos_visitados como set(), que nao permite elementos repetidos i.e. set[1,1,2,3] = (1,2,3)
+    nodos_visitados = set()
+
+    # inicia nodos_fronteira como deque, que significa double-ended queue
+    # facilita pop e append e funciona com qualquer tipo
+    nodos_fronteira: deque = deque([estado_inicial])
+
+    # enquanto houver nodos, repete a busca
+    while len(nodos_fronteira) != 0:
+
+        # remove o nodo mais recente da pilha (deque) i.e. [1,2,3].pop() = 3
+        nodo_atual = nodos_fronteira.pop()  
+
+        # se o nodo for o OBJETIVO, retorna a lista de movimentos
+        if nodo_atual.estado == OBJETIVO:  
+            return gera_lista_movimentos(nodo_atual)
+
+        # checa se o estado atual ja estava na set de nodos visitados
+        if not nodo_atual.estado in nodos_visitados:
+
+            # adiciona o nodo aos nodos visitados
+            nodos_visitados.add(nodo_atual.estado)  
+
+            # append a nodos na fronteira os vizinhos do nodo atual
+            nodos_fronteira.extend(expande(nodo_atual))
+
+    # se o while da busca encerrar, nao existe sequencia de movimentos possivel
+    return None  
 
 
 def astar_hamming(estado):
