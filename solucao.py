@@ -1,4 +1,5 @@
 from collections import deque
+import heapq
 
 OBJETIVO = "12345678_"
 
@@ -263,7 +264,20 @@ def dfs(estado):
             nodos_fronteira.extend(expande(nodo_atual))
 
     # se o while da busca encerrar, nao existe sequencia de movimentos possivel
-    return None  
+    return None
+
+
+# calcula a distancia hamming de um estado
+def Hamming(estado):
+    estado_objetivo = "12345678_"
+    fora_do_lugar = 0
+    for i, posicao in enumerate(estado_objetivo):
+        if posicao != estado[i]:
+            fora_do_lugar += 1
+
+    return fora_do_lugar
+
+
 
 
 def astar_hamming(estado):
@@ -276,7 +290,50 @@ def astar_hamming(estado):
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    
+    # inicia variavel de Nodo inicial com o estado recebido
+    estado_inicial = Nodo(estado, None, None, 0)
+
+    # inicia nodos_visitados como set(), que nao permite elementos repetidos i.e. set[1,1,2,3] = (1,2,3)
+    nodos_visitados = set()
+
+
+    nodos_fronteira = [] # nodos_fronteira deve ser uma lista, que é utilizada em heapq
+    h = estado_inicial.custo + Hamming(estado_inicial.estado)
+    heapq.heappush(nodos_fronteira, (h, 0, estado_inicial))
+    count = 1
+
+    # enquanto houver nodos, repete a busca
+    while len(nodos_fronteira) != 0:
+        
+
+        # remove o nodo de menor custo da fila de prioridades
+        nodo_atual = heapq.heappop(nodos_fronteira)[2] # necessario o indice [1] pois o nodo esta na posicao [1] da tupla (prioridade, nodo)
+
+        # se o nodo for o OBJETIVO, retorna a lista de movimentos
+        if nodo_atual.estado == OBJETIVO:  
+            return gera_lista_movimentos(nodo_atual)
+
+        # checa se o estado atual ja estava na set de nodos visitados
+        if not nodo_atual.estado in nodos_visitados:
+
+            # adiciona o nodo aos nodos visitados
+            nodos_visitados.add(nodo_atual.estado)  
+
+
+            nodos_sucessores = expande(nodo_atual)
+            for node in nodos_sucessores:
+
+                
+                h = node.custo + Hamming(node.estado) + 1
+                heapq.heappush(nodos_fronteira, (h, count, node))
+                count += 1
+                
+
+    # se o while da busca encerrar, nao existe sequencia de movimentos possivel
+    return None
+
+astar_hamming("1234567_8") 
 
 
 def astar_manhattan(estado):
