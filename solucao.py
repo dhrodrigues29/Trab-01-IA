@@ -299,7 +299,7 @@ def astar_hamming(estado):
 
 
     nodos_fronteira = [] # nodos_fronteira deve ser uma lista, que é utilizada em heapq
-    h = estado_inicial.custo + Hamming(estado_inicial.estado)
+    h = estado_inicial.custo + Hamming(estado_inicial.estado) # calcula o custo do nodo inicial
     heapq.heappush(nodos_fronteira, (h, 0, estado_inicial))
     count = 1
 
@@ -308,7 +308,85 @@ def astar_hamming(estado):
         
 
         # remove o nodo de menor custo da fila de prioridades
-        nodo_atual = heapq.heappop(nodos_fronteira)[2] # necessario o indice [1] pois o nodo esta na posicao [1] da tupla (prioridade, nodo)
+        nodo_atual = heapq.heappop(nodos_fronteira)[2] # necessario o indice [2] pois o nodo esta na posicao [2] da tupla (prioridade, count, nodo)
+
+        # se o nodo for o OBJETIVO, retorna a lista de movimentos
+        if nodo_atual.estado == OBJETIVO:  
+            return gera_lista_movimentos(nodo_atual)
+
+        # checa se o estado atual ja estava na set de nodos visitados
+        if not nodo_atual.estado in nodos_visitados:
+
+            # adiciona o nodo aos nodos visitados
+            nodos_visitados.add(nodo_atual.estado)  
+
+            # encontra os sucessores
+            nodos_sucessores = expande(nodo_atual)
+            for node in nodos_sucessores:
+
+                # calcula a heuristica do sucessor
+                h = node.custo + Hamming(node.estado) + 1
+
+                # insere-o no heap
+                heapq.heappush(nodos_fronteira, (h, count, node))
+
+                # count é uma variavel que auxilia o heap no ordenamento, é uma contingencia para casos em que heuristica é igual para dois estados
+                count += 1
+                
+
+    # se o while da busca encerrar, nao existe sequencia de movimentos possivel
+    return None
+
+
+def Manhattan(estado):
+    soma = 0
+    for i in range(1, 9):
+      pos = estado.index(str(i))
+      if ((i-1) == pos):
+        soma += 0
+      elif ((i-1 < 3) and (pos < 3)) or ((2 < i-1 < 6) and (2 < pos < 6)) or ((5 < i-1 < 9) and (5 < pos < 9)):
+        soma += abs(pos - (i-1))
+      elif ((i-1 < 3) and (2 < pos < 6)) or ((2 < i-1 < 6) and (5 < pos < 9)):
+        soma += 1 + abs(pos-3 - (i-1))
+      elif ((2 < i-1 < 6) and (pos < 3)) or ((5 < i-1 < 9) and (2 < pos < 6)):
+        soma += 1 + abs((pos+3) - (i-1))
+      elif ((i-1 < 3) and (5 < pos < 9)):
+        soma += 2 + abs(pos-6 - (i-1))
+      elif ((5 < i-1 < 9) and (pos < 3)):
+        soma += 2 + abs((pos+6) - (i-1))
+
+    return soma
+
+
+def astar_manhattan(estado):
+    """
+    Recebe um estado (string), executa a busca A* com h(n) = soma das distâncias de Manhattan e
+    retorna uma lista de ações que leva do
+    estado recebido até o objetivo ("12345678_").
+    Caso não haja solução a partir do estado recebido, retorna None
+    :param estado: str
+    :return:
+    """
+    # substituir a linha abaixo pelo seu codigo
+    
+    # inicia variavel de Nodo inicial com o estado recebido
+    estado_inicial = Nodo(estado, None, None, 0)
+
+    # inicia nodos_visitados como set(), que nao permite elementos repetidos i.e. set[1,1,2,3] = (1,2,3)
+    nodos_visitados = set()
+
+
+    nodos_fronteira = [] # nodos_fronteira deve ser uma lista, que é utilizada em heapq
+    h = estado_inicial.custo + Manhattan(estado_inicial.estado)
+    heapq.heappush(nodos_fronteira, (h, 0, estado_inicial))
+    count = 1
+
+    # enquanto houver nodos, repete a busca
+    while len(nodos_fronteira) != 0:
+        
+
+        # remove o nodo de menor custo da fila de prioridades
+        nodo_atual = heapq.heappop(nodos_fronteira)[2] # necessario o indice [2] pois o nodo esta na posicao [2] da tupla (prioridade, nodo)
 
         # se o nodo for o OBJETIVO, retorna a lista de movimentos
         if nodo_atual.estado == OBJETIVO:  
@@ -325,7 +403,7 @@ def astar_hamming(estado):
             for node in nodos_sucessores:
 
                 
-                h = node.custo + Hamming(node.estado) + 1
+                h = node.custo + Manhattan(node.estado) + 1
                 heapq.heappush(nodos_fronteira, (h, count, node))
                 count += 1
                 
@@ -333,17 +411,10 @@ def astar_hamming(estado):
     # se o while da busca encerrar, nao existe sequencia de movimentos possivel
     return None
 
-astar_hamming("1234567_8") 
 
 
-def astar_manhattan(estado):
-    """
-    Recebe um estado (string), executa a busca A* com h(n) = soma das distâncias de Manhattan e
-    retorna uma lista de ações que leva do
-    estado recebido até o objetivo ("12345678_").
-    Caso não haja solução a partir do estado recebido, retorna None
-    :param estado: str
-    :return:
-    """
-    # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+
+
+
+
+
